@@ -43,6 +43,8 @@ typedef struct snake Snake;
 Snake *head;
 Snake *tail;
 
+bool quit = false;
+
 void init_snake()
 {
     Snake *new = malloc(sizeof(Snake));
@@ -180,6 +182,31 @@ void detect_apple()
     return;
 }
 
+void detect_boundaries()
+{
+    if (head->x > GRID_DIM || head->x < 0 || head->y > GRID_DIM || head->y < 0)
+    {
+        quit = true;
+    }
+    return;
+}
+void detect_snake_collision()
+{
+    if (head->next != NULL)
+    {
+        Snake *track = head->next;
+        while (track->next != NULL)
+        {
+            if (head->x == track->x && head->y == track->y)
+            {
+                quit = true;
+            }
+            track = track->next;
+        }
+    }
+    return;
+}
+
 int WinMain(int argc, char *argv[])
 {
     if (argc && argv)
@@ -223,7 +250,6 @@ int WinMain(int argc, char *argv[])
     }
 
     // Start Event management to quit or termnate the windows
-    bool quit = false;
     SDL_Event event;
 
     while (!quit)
@@ -266,6 +292,9 @@ int WinMain(int argc, char *argv[])
 
         move_snake();
         detect_apple();
+        detect_boundaries(&quit);
+        detect_snake_collision(&quit);
+
         // render grid in centred mode
 
         render_grid(renderer, ((WINDOW_WIDTH / 2) - (GRID_DIM / 2)), ((WINDOW_HEIGHT / 2) - (GRID_DIM / 2)));
