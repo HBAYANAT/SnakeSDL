@@ -3,6 +3,8 @@
 #include <stdbool.h>
 #include <time.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 
 #define WINDOW_X 0
 #define WINDOW_Y 0
@@ -207,6 +209,33 @@ void detect_snake_collision()
     return;
 }
 
+void renderText(SDL_Renderer *renderer, const char *text, int x, int y, SDL_Color color, TTF_Font *font)
+{
+    SDL_Surface *textSurface = TTF_RenderText_Solid(font, text, color);
+    if (textSurface == NULL)
+    {
+        fprintf(stderr, "TTF_RenderText_Solid Error: %s\n", TTF_GetError());
+        return;
+    }
+
+    SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+    if (textTexture == NULL)
+    {
+        fprintf(stderr, "SDL_CreateTextureFromSurface Error: %s\n", SDL_GetError());
+        SDL_FreeSurface(textSurface);
+        return;
+    }
+
+    SDL_Rect textRect = {x, y, textSurface->w, textSurface->h};
+
+    // Render the text on the renderer
+    SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+
+    // Clean up resources
+    SDL_DestroyTexture(textTexture);
+    SDL_FreeSurface(textSurface);
+}
+
 int WinMain(int argc, char *argv[])
 {
     if (argc && argv)
@@ -249,6 +278,16 @@ int WinMain(int argc, char *argv[])
         return 1; // Exit with an error code
     }
 
+    TTF_Init();
+    TTF_Font *font = TTF_OpenFont("fonts/Ubuntu-Regular.ttf", 24);
+    if (font == NULL)
+    {
+        fprintf(stderr, "TTF_OpenFont Error: %s\n", TTF_GetError());
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return 1;
+    }
     // Start Event management to quit or termnate the windows
     SDL_Event event;
 
@@ -289,7 +328,10 @@ int WinMain(int argc, char *argv[])
         SDL_RenderClear(renderer);
 
         // render loop start
-
+        SDL_Color textColor = {255, 255, 255, 255};
+        char str[20];
+        snprintf(str, sizeof(str), "x : %d y : %d", head->x, head->y);
+        renderText(renderer, str, 0, 0, textColor, font);
         move_snake();
         detect_apple();
         detect_boundaries(&quit);

@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra
 LDFLAGS = -mwindows
 INCLUDES = -IC:/msys64/mingw64/include/SDL2 -I./
-LIBS = -LC:/msys64/mingw64/lib -lSDL2 -lSDL2main
+LIBS = -LC:/msys64/mingw64/lib -lSDL2 -lSDL2main -lSDL2_ttf
 SRCS = snake.c
 OBJS = $(SRCS:.c=.o)
 MAIN = snake
