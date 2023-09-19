@@ -331,7 +331,7 @@ int WinMain(int argc, char *argv[])
         SDL_Color textColor = {255, 255, 255, 255};
         char str[20];
         snprintf(str, sizeof(str), "x : %d y : %d", head->x, head->y);
-        renderText(renderer, str, 0, 0, textColor, font);
+        renderText(renderer, str, (WINDOW_WIDTH / 2) - (GRID_DIM / 2), (WINDOW_HEIGHT / 2) - (GRID_DIM / 2) - 50, textColor, font);
         move_snake();
         detect_apple();
         detect_boundaries(&quit);
